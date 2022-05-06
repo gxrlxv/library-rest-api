@@ -2,30 +2,48 @@ package genre
 
 import (
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api"
-	"github.com/gxrlxv/library-rest-api/internal/domain/genre"
+	"github.com/gxrlxv/library-rest-api/internal/service"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
 const (
-	genresURL = "/genres"
-	genreURL  = "/genres/:genre_id"
+	genresURL = "api/genres"
+	genreURL  = "api/genres/:genre_id"
 )
 
 type genreHandler struct {
-	genreService genre.Service
+	genreService service.Genre
 }
 
-func NewGenreHandler(service genre.Service) api.Handler {
+func NewGenreHandler(service service.Genre) api.Handler {
 	return &genreHandler{genreService: service}
 }
 
 func (h *genreHandler) Register(router *httprouter.Router) {
+	router.POST(genresURL, h.CreateGenre)
+	router.GET(genreURL, h.GetGenre)
 	router.GET(genresURL, h.GetAllGenres)
+	router.PUT(genreURL, h.UpdateGenre)
+	router.DELETE(genreURL, h.DeleteGenre)
+}
+
+func (h *genreHandler) CreateGenre(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	panic("implement me")
+}
+
+func (h *genreHandler) GetGenre(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	panic("implement me")
 }
 
 func (h *genreHandler) GetAllGenres(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	panic("implement me")
+}
 
-	w.Write([]byte("genres"))
-	w.WriteHeader(http.StatusOK)
+func (h *genreHandler) UpdateGenre(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	panic("implement me")
+}
+
+func (h *genreHandler) DeleteGenre(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	panic("implement me")
 }
