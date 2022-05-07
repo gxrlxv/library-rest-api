@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	authorsURL = "api/authors"
-	authorURL  = "api/authors/:author_id"
+	authorsURL = "/api/authors"
+	authorURL  = "/api/authors/:author_id"
 )
 
 type handler struct {

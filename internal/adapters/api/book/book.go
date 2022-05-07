@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	bookURL  = "api/books/:book_id"
-	booksURL = "api/books"
+	bookURL  = "/api/books/:book_id"
+	booksURL = "/api/books"
 )
 
 type bookHandler struct {

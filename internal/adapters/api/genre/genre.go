@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	genresURL = "api/genres"
-	genreURL  = "api/genres/:genre_id"
+	genresURL = "/api/genres"
+	genreURL  = "/api/genres/:genre_id"
 )
 
 type genreHandler struct {

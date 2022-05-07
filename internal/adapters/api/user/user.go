@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	userSignUpURL  = "api/users/sign-up"
-	usersSignInURL = "api/users/sign-in"
-	usersURL       = "api/users"
-	userURL        = "api/users/:user_id"
+	userSignUpURL  = "/api/users/sign-up"
+	usersSignInURL = "/api/users/sign-in"
+	usersURL       = "/api/users"
+	userURL        = "/api/users/:user_id"
 )
 
 type userHandler struct {
@@ -31,21 +31,21 @@ func (h *userHandler) Register(router *httprouter.Router) {
 }
 
 func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	w.Write([]byte("user sign up"))
 }
 
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	w.Write([]byte("user sign in"))
 }
 
 func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	w.Write([]byte("get user by id"))
 }
 
 func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	w.Write([]byte("get all users"))
 }
 
 func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	w.Write([]byte("delete user"))
 }
