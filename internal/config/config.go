@@ -13,15 +13,14 @@ type Config struct {
 		BindIP string `yaml:"bind_ip"`
 		Port   string `yaml:"port"`
 	} `yaml:"listen"`
-	//MongoDB struct {
-	//	Host       string `yaml:"host"`
-	//	Port       string `yaml:"port"`
-	//	Database   string `yaml:"database"`
-	//	AuthDB     string `yaml:"auth_db"`
-	//	Username   string `yaml:"username"`
-	//	Password   string `yaml:"password"`
-	//	Collection string `yaml:"collection"`
-	//} `yaml:"mongodb"`
+	MongoDB struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Database string `yaml:"database"`
+		AuthDB   string `yaml:"auth_db"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"mongodb"`
 }
 
 var instance *Config

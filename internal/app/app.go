@@ -1,10 +1,14 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api/user"
 	"github.com/gxrlxv/library-rest-api/internal/config"
+	"github.com/gxrlxv/library-rest-api/internal/domain"
+	"github.com/gxrlxv/library-rest-api/internal/repository"
 	"github.com/gxrlxv/library-rest-api/internal/service"
+	"github.com/gxrlxv/library-rest-api/pkg/client/mongodb"
 	"github.com/gxrlxv/library-rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -24,6 +28,24 @@ func Run() {
 	logger.Info("create router")
 	router := httprouter.New()
 	cfg := config.GetConfig()
+
+	cfgMongo := cfg.MongoDB
+	mongoDBClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port, cfgMongo.Username,
+		cfgMongo.Password, cfgMongo.Database, cfgMongo.AuthDB)
+	if err != nil {
+		panic(err)
+	}
+
+	storage := repository.NewUserRepository(mongoDBClient, logger)
+
+	user1 := domain.User{
+		ID:           "43",
+		Email:        "fasdasdail.eq",
+		Username:     "qwdasdasdas",
+		PasswordHash: "fasdczxczxsa",
+	}
+
+	storage.Create(context.Background(), user1)
 
 	userService := service.NewUserService(nil)
 

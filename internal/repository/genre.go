@@ -3,15 +3,17 @@ package repository
 import (
 	"context"
 	"github.com/gxrlxv/library-rest-api/internal/domain"
+	"github.com/gxrlxv/library-rest-api/pkg/logging"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type genreRepository struct {
-	db *mongo.Database
+	db     *mongo.Database
+	logger *logging.Logger
 }
 
-func NewGenreRepository(db *mongo.Database) *genreRepository {
-	return &genreRepository{db: db}
+func NewGenreRepository(db *mongo.Database, logger *logging.Logger) *genreRepository {
+	return &genreRepository{db: db, logger: logger}
 }
 
 func (gs *genreRepository) Create(ctx context.Context, genre domain.Genre) (string, error) {

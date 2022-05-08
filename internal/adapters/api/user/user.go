@@ -1,7 +1,10 @@
 package user
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api"
+	"github.com/gxrlxv/library-rest-api/internal/domain"
 	"github.com/gxrlxv/library-rest-api/internal/service"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -31,7 +34,20 @@ func (h *userHandler) Register(router *httprouter.Router) {
 }
 
 func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("user sign up"))
+	var rq CreateUserDTO
+
+	err := json.NewDecoder(r.Body).Decode(&rq)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	_, err = h.userService.CreateUser(context.Background(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 }
 
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
