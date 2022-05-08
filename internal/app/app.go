@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api/user"
 	"github.com/gxrlxv/library-rest-api/internal/config"
-	"github.com/gxrlxv/library-rest-api/internal/domain"
 	"github.com/gxrlxv/library-rest-api/internal/repository"
 	"github.com/gxrlxv/library-rest-api/internal/service"
 	"github.com/gxrlxv/library-rest-api/pkg/client/mongodb"
@@ -29,6 +28,7 @@ func Run() {
 	router := httprouter.New()
 	cfg := config.GetConfig()
 
+	// MONGO DB
 	cfgMongo := cfg.MongoDB
 	mongoDBClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port, cfgMongo.Username,
 		cfgMongo.Password, cfgMongo.Database, cfgMongo.AuthDB)
@@ -36,18 +36,17 @@ func Run() {
 		panic(err)
 	}
 
-	storage := repository.NewUserRepository(mongoDBClient, logger)
+	userRepo := repository.NewUserRepository(mongoDBClient, logger)
+	userService := service.NewUserService(userRepo)
 
-	user1 := domain.User{
-		ID:           "43",
-		Email:        "fasdasdail.eq",
-		Username:     "qwdasdasdas",
-		PasswordHash: "fasdczxczxsa",
-	}
-
-	storage.Create(context.Background(), user1)
-
-	userService := service.NewUserService(nil)
+	//user1 := domain.User{
+	//	ID:           "43",
+	//	Email:        "fasdasdail.eq",
+	//	Username:     "qwdasdasdas",
+	//	PasswordHash: "fasdczxczxsa",
+	//}
+	//
+	//userRepo.Create(context.Background(), user1)
 
 	handler := user.NewUserHandler(userService)
 	handler.Register(router)

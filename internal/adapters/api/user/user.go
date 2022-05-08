@@ -1,7 +1,6 @@
 package user
 
 import (
-	"context"
 	"encoding/json"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api"
 	"github.com/gxrlxv/library-rest-api/internal/domain"
@@ -42,12 +41,12 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 		return
 	}
 
-	_, err = h.userService.CreateUser(context.Background(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
+	_, err = h.userService.CreateUser(r.Context(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		panic(err)
 	}
 
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
