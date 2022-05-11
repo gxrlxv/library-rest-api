@@ -22,9 +22,9 @@ func (us *userService) CreateUser(ctx context.Context, user domain.User) (string
 }
 
 func (us *userService) GetUserByID(ctx context.Context, id string) (domain.User, error) {
-	return us.repository.GetOne(ctx, id)
+	return us.repository.FindOne(ctx, id)
 }
 
 func (us *userService) GetAllUsers(ctx context.Context) ([]domain.User, error) {
-	return us.repository.GetAll(ctx)
+	return us.repository.FindAll(ctx)
 }

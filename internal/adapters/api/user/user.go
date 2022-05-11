@@ -54,13 +54,34 @@ func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params http
 }
 
 func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("get user by id"))
+	id := params.ByName("user_id")
+
+	user, err := h.userService.GetUserByID(r.Context(), id)
+	if err != nil {
+		panic(err)
+	}
+
+	marshalUser, err := json.Marshal(user)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Write(marshalUser)
 }
 
 func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("get all users"))
+	users, err := h.userService.GetAllUsers(r.Context())
+	if err != nil {
+		panic(err)
+	}
+
+	marshalUsers, err := json.Marshal(users)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Write(marshalUsers)
 }
 
 func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("delete user"))
 }
