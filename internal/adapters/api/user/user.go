@@ -26,7 +26,7 @@ func NewUserHandler(service service.User) api.Handler {
 
 func (h *userHandler) Register(router *httprouter.Router) {
 	router.POST(userSignUpURL, h.SignUp)
-	router.POST(usersSignInURL, h.SignIn)
+	//	router.POST(usersSignInURL, h.SignIn)
 	router.GET(userURL, h.GetUser)
 	router.GET(usersURL, h.GetAllUsers)
 	router.DELETE(userURL, h.DeleteUser)
@@ -49,16 +49,17 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("user sign in"))
-}
+//func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+//	w.Write([]byte("user sign in"))
+//}
 
 func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id := params.ByName("user_id")
 
 	user, err := h.userService.GetUserByID(r.Context(), id)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	marshalUser, err := json.Marshal(user)
@@ -67,12 +68,14 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params htt
 	}
 
 	w.Write(marshalUser)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	users, err := h.userService.GetAllUsers(r.Context())
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	marshalUsers, err := json.Marshal(users)
@@ -81,7 +84,17 @@ func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params
 	}
 
 	w.Write(marshalUsers)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("user_id")
+
+	err := h.userService.DeleteUser(r.Context(), id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
