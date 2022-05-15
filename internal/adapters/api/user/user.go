@@ -26,7 +26,7 @@ func NewUserHandler(service service.User) api.Handler {
 
 func (h *userHandler) Register(router *httprouter.Router) {
 	router.POST(userSignUpURL, h.SignUp)
-	//	router.POST(usersSignInURL, h.SignIn)
+	router.POST(usersSignInURL, h.SignIn)
 	router.GET(userURL, h.GetUser)
 	router.GET(usersURL, h.GetAllUsers)
 	router.DELETE(userURL, h.DeleteUser)
@@ -49,9 +49,9 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 	w.WriteHeader(http.StatusCreated)
 }
 
-//func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-//	w.Write([]byte("user sign in"))
-//}
+func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	w.Write([]byte("user sign in"))
+}
 
 func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id := params.ByName("user_id")

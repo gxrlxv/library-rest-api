@@ -35,7 +35,8 @@ func (ur *userRepository) Create(ctx context.Context, user domain.User) (string,
 	ur.logger.Trace(user)
 	return "", fmt.Errorf("failed to convert objectid to hex. probably oid: %s", oid)
 }
-func (ur *userRepository) FindOne(ctx context.Context, id string) (u domain.User, err error) {
+
+func (ur *userRepository) FindByID(ctx context.Context, id string) (u domain.User, err error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return u, fmt.Errorf("failed to convert Hex to objextid. hex: %s", id)
@@ -56,6 +57,25 @@ func (ur *userRepository) FindOne(ctx context.Context, id string) (u domain.User
 
 	return u, nil
 }
+
+func (ur *userRepository) FindByEmail(ctx context.Context, email string) (u domain.User, err error) {
+	filter := bson.M{"email": email}
+
+	result := ur.db.Collection("users").FindOne(ctx, filter)
+	if result.Err() != nil {
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
+			return u, fmt.Errorf("not found")
+		}
+		return u, fmt.Errorf("failed to find user by email: %s due to error: %v", email, err)
+	}
+
+	if err = result.Decode(&u); err != nil {
+		return u, fmt.Errorf("failed to decode user with email: %s drom db due to error: %v", email, err)
+	}
+
+	return u, nil
+}
+
 func (ur *userRepository) FindAll(ctx context.Context) (u []domain.User, err error) {
 	cursor, err := ur.db.Collection("users").Find(ctx, bson.M{})
 	if cursor.Err() != nil {
