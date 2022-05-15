@@ -50,6 +50,7 @@ type (
 
 	User interface {
 		CreateUser(ctx context.Context, user domain.User) (string, error)
+		SignIn(ctx context.Context, user domain.User) error
 		GetUserByID(ctx context.Context, id string) (domain.User, error)
 		GetAllUsers(ctx context.Context) ([]domain.User, error)
 		UpdateUser(ctx context.Context, user domain.User) error

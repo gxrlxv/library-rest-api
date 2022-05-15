@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/gxrlxv/library-rest-api/internal/domain"
 )
 
@@ -21,8 +22,23 @@ func (us *userService) CreateUser(ctx context.Context, user domain.User) (string
 	return aid, err
 }
 
+func (us *userService) SignIn(ctx context.Context, user domain.User) error {
+	model, err := us.repository.FindByEmail(ctx, user.Email)
+	if err != nil {
+		return fmt.Errorf("user not found")
+	}
+	if model.Username != user.Username {
+		return fmt.Errorf("wrong username")
+	}
+	if model.PasswordHash != user.PasswordHash {
+		return fmt.Errorf("wrong password")
+	}
+
+	return nil
+}
+
 func (us *userService) GetUserByID(ctx context.Context, id string) (domain.User, error) {
-	return us.repository.FindOne(ctx, id)
+	return us.repository.FindByID(ctx, id)
 }
 
 func (us *userService) GetAllUsers(ctx context.Context) ([]domain.User, error) {

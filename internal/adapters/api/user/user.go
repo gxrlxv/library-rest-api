@@ -50,7 +50,20 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 }
 
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	w.Write([]byte("user sign in"))
+	var rq CreateUserDTO
+
+	err := json.NewDecoder(r.Body).Decode(&rq)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.userService.SignIn(r.Context(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
