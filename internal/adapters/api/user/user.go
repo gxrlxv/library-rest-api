@@ -33,15 +33,15 @@ func (h *userHandler) Register(router *httprouter.Router) {
 }
 
 func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	var rq CreateUserDTO
+	var dto domain.CreateUserDTO
 
-	err := json.NewDecoder(r.Body).Decode(&rq)
+	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	_, err = h.userService.CreateUser(r.Context(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
+	_, err = h.userService.CreateUser(r.Context(), dto)
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +50,7 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 }
 
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	var rq CreateUserDTO
+	var rq domain.CreateUserDTO
 
 	err := json.NewDecoder(r.Body).Decode(&rq)
 	if err != nil {
@@ -58,7 +58,7 @@ func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params http
 		return
 	}
 
-	err = h.userService.SignIn(r.Context(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.PasswordHash})
+	err = h.userService.SignIn(r.Context(), domain.User{Email: rq.Email, Username: rq.Username, PasswordHash: rq.Password})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 	}

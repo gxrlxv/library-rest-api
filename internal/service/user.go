@@ -14,7 +14,13 @@ func NewUserService(repository UserRepository) *userService {
 	return &userService{repository: repository}
 }
 
-func (us *userService) CreateUser(ctx context.Context, user domain.User) (string, error) {
+func (us *userService) CreateUser(ctx context.Context, userDTO domain.CreateUserDTO) (string, error) {
+	user := domain.NewUser(userDTO)
+	err := user.GeneratePasswordHash(userDTO.Password)
+	if err != nil {
+		panic(err)
+	}
+
 	aid, err := us.repository.Create(ctx, user)
 	if err != nil {
 		panic(err)
