@@ -20,20 +20,20 @@ func NewUserRepository(db *mongo.Database, logger *logging.Logger) *userReposito
 	return &userRepository{db: db, logger: logger}
 }
 
-func (ur *userRepository) Create(ctx context.Context, user domain.User) (string, error) {
+func (ur *userRepository) Create(ctx context.Context, user domain.User) error {
 	ur.logger.Debug("create user")
 	result, err := ur.db.Collection("users").InsertOne(ctx, user)
 	if err != nil {
-		return "", fmt.Errorf("failed to create user due to error: %v", err)
+		return fmt.Errorf("failed to create user due to error: %v", err)
 	}
 
 	ur.logger.Debug("convert insertedID to objectID")
 	oid, ok := result.InsertedID.(primitive.ObjectID)
 	if ok {
-		return oid.Hex(), nil
+		return nil
 	}
 	ur.logger.Trace(user)
-	return "", fmt.Errorf("failed to convert objectid to hex. probably oid: %s", oid)
+	return fmt.Errorf("failed to convert objectid to hex. probably oid: %s", oid)
 }
 
 func (ur *userRepository) FindByID(ctx context.Context, id string) (u domain.User, err error) {
@@ -71,6 +71,24 @@ func (ur *userRepository) FindByEmail(ctx context.Context, email string) (u doma
 
 	if err = result.Decode(&u); err != nil {
 		return u, fmt.Errorf("failed to decode user with email: %s drom db due to error: %v", email, err)
+	}
+
+	return u, nil
+}
+
+func (ur *userRepository) FindByUsername(ctx context.Context, username string) (u domain.User, err error) {
+	filter := bson.M{"username": username}
+
+	result := ur.db.Collection("users").FindOne(ctx, filter)
+	if result.Err() != nil {
+		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
+			return u, fmt.Errorf("not found")
+		}
+		return u, fmt.Errorf("failed to find user by username: %s due to error: %v", username, err)
+	}
+
+	if err = result.Decode(&u); err != nil {
+		return u, fmt.Errorf("failed to decode user with username: %s drom db due to error: %v", username, err)
 	}
 
 	return u, nil

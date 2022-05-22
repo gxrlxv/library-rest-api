@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,16 +26,23 @@ func (u *User) GeneratePasswordHash(password string) error {
 	if err != nil {
 		return err
 	}
-
 	u.PasswordHash = string(hashedPassword)
-	// Comparing the password with the hash
-	//err = bcrypt.CompareHashAndPassword(hashedPassword, password)
+
+	return nil
+}
+
+func (u *User) CompareHashAndPassword(password string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password))
+	if err != nil {
+		return fmt.Errorf("passwords don't match")
+	}
 
 	return nil
 }
 
 type CreateUserDTO struct {
-	Email    string `json:"email" bson:"email"`
-	Username string `json:"username" bson:"username"`
-	Password string `json:"password" bson:"password"`
+	Email          string `json:"email"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	RepeatPassword string `json:"repeat_password"`
 }

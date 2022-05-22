@@ -43,7 +43,8 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 
 	_, err = h.userService.CreateUser(r.Context(), dto)
 	if err != nil {
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.WriteHeader(http.StatusCreated)

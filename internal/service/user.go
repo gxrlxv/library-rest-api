@@ -14,18 +14,34 @@ func NewUserService(repository UserRepository) *userService {
 	return &userService{repository: repository}
 }
 
-func (us *userService) CreateUser(ctx context.Context, userDTO domain.CreateUserDTO) (string, error) {
-	user := domain.NewUser(userDTO)
-	err := user.GeneratePasswordHash(userDTO.Password)
-	if err != nil {
-		panic(err)
+func (us *userService) CreateUser(ctx context.Context, userDTO domain.CreateUserDTO) error {
+	if userDTO.Password != userDTO.RepeatPassword {
+		return fmt.Errorf("passwords don't match")
 	}
 
-	aid, err := us.repository.Create(ctx, user)
-	if err != nil {
-		panic(err)
+	_, err := us.repository.FindByEmail(ctx, userDTO.Email)
+	if err == nil {
+		return fmt.Errorf("user with email: %s already exist", userDTO.Email)
 	}
-	return aid, err
+
+	_, err = us.repository.FindByUsername(ctx, userDTO.Username)
+	if err == nil {
+		return fmt.Errorf("user with name: %s already exist", userDTO.Username)
+	}
+
+	user := domain.NewUser(userDTO)
+
+	err = user.GeneratePasswordHash(userDTO.Password)
+	if err != nil {
+		return err
+	}
+
+	err = us.repository.Create(ctx, user)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (us *userService) SignIn(ctx context.Context, user domain.User) error {
