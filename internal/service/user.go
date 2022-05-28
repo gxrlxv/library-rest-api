@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gxrlxv/library-rest-api/internal/domain"
+	"github.com/gxrlxv/library-rest-api/pkg/apperrors"
 )
 
 type userService struct {
@@ -21,19 +22,19 @@ func (us *userService) CreateUser(ctx context.Context, userDTO domain.CreateUser
 
 	_, err := us.repository.FindByEmail(ctx, userDTO.Email)
 	if err == nil {
-		return fmt.Errorf("user with email: %s already exist", userDTO.Email)
+		return apperrors.ErrUserAlreadyExistEmail
 	}
 
 	_, err = us.repository.FindByUsername(ctx, userDTO.Username)
 	if err == nil {
-		return fmt.Errorf("user with name: %s already exist", userDTO.Username)
+		return apperrors.ErrUserAlreadyExistName
 	}
 
 	user := domain.NewUser(userDTO)
 
 	err = user.GeneratePasswordHash(userDTO.Password)
 	if err != nil {
-		return err
+		return apperrors.ErrUserPasswordNotGenerated
 	}
 
 	err = us.repository.Create(ctx, user)
@@ -44,16 +45,15 @@ func (us *userService) CreateUser(ctx context.Context, userDTO domain.CreateUser
 	return err
 }
 
-func (us *userService) SignIn(ctx context.Context, user domain.User) error {
-	model, err := us.repository.FindByEmail(ctx, user.Email)
+func (us *userService) SignIn(ctx context.Context, userDTO domain.SignInUserDTO) error {
+	model, err := us.repository.FindByEmail(ctx, userDTO.Email)
+
 	if err != nil {
-		return fmt.Errorf("user not found")
+		return apperrors.ErrUserNotFound
 	}
-	if model.Username != user.Username {
-		return fmt.Errorf("wrong username")
-	}
-	if model.PasswordHash != user.PasswordHash {
-		return fmt.Errorf("wrong password")
+
+	if err = model.CompareHashAndPassword(userDTO.Password); err != nil {
+		return apperrors.ErrUserIncorrectPassword
 	}
 
 	return nil

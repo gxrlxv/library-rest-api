@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/gxrlxv/library-rest-api/pkg/apperrors"
+
 	"github.com/gxrlxv/library-rest-api/internal/domain"
 	"github.com/gxrlxv/library-rest-api/pkg/logging"
 	"github.com/pkg/errors"
@@ -46,7 +48,7 @@ func (ur *userRepository) FindByID(ctx context.Context, id string) (u domain.Use
 	result := ur.db.Collection("users").FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
-			return u, fmt.Errorf("not found")
+			return u, apperrors.ErrUserNotFound
 		}
 		return u, fmt.Errorf("failed to find user by id: %s due to error: %v", id, err)
 	}
@@ -64,7 +66,7 @@ func (ur *userRepository) FindByEmail(ctx context.Context, email string) (u doma
 	result := ur.db.Collection("users").FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
-			return u, fmt.Errorf("not found")
+			return u, apperrors.ErrUserNotFound
 		}
 		return u, fmt.Errorf("failed to find user by email: %s due to error: %v", email, err)
 	}
@@ -82,7 +84,7 @@ func (ur *userRepository) FindByUsername(ctx context.Context, username string) (
 	result := ur.db.Collection("users").FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
-			return u, fmt.Errorf("not found")
+			return u, apperrors.ErrUserNotFound
 		}
 		return u, fmt.Errorf("failed to find user by username: %s due to error: %v", username, err)
 	}
@@ -136,7 +138,7 @@ func (ur *userRepository) Update(ctx context.Context, user domain.User) error {
 	}
 
 	if result.MatchedCount == 0 {
-		return fmt.Errorf("not found")
+		return apperrors.ErrUserNotFound
 	}
 	ur.logger.Tracef("Matched %d documents and modifed %d", result.MatchedCount, result.ModifiedCount)
 
@@ -151,10 +153,10 @@ func (ur *userRepository) Delete(ctx context.Context, id string) error {
 
 	result, err := ur.db.Collection("users").DeleteOne(ctx, filter)
 	if err != nil {
-		return fmt.Errorf("failet to execute query. error: %v", err)
+		return fmt.Errorf("failed to execute query. error: %v", err)
 	}
 	if result.DeletedCount == 0 {
-		return fmt.Errorf("not found")
+		return apperrors.ErrUserNotFound
 	}
 	ur.logger.Tracef("Deleted %d documents", result.DeletedCount)
 

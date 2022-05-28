@@ -46,3 +46,8 @@ type CreateUserDTO struct {
 	Password       string `json:"password"`
 	RepeatPassword string `json:"repeat_password"`
 }
+
+type SignInUserDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
