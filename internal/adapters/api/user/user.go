@@ -125,7 +125,7 @@ func (h *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request, params 
 		if err == apperrors.ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
 		}
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

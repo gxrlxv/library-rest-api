@@ -121,11 +121,20 @@ func (ur *userRepository) Update(ctx context.Context, userDTO domain.UpdateUserD
 	}
 
 	var updateUserObj bson.M
+
 	err = bson.Unmarshal(userBytes, &updateUserObj)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal user bytes. error: %v", err)
 	}
-	
+
+	if userDTO.Email == "" {
+		delete(updateUserObj, "email")
+	}
+
+	if userDTO.Username == "" {
+		delete(updateUserObj, "username")
+	}
+
 	update := bson.M{
 		"$set": updateUserObj,
 	}
