@@ -67,8 +67,8 @@ func (us *userService) GetAllUsers(ctx context.Context) ([]domain.User, error) {
 	return us.repository.FindAll(ctx)
 }
 
-func (us *userService) UpdateUser(ctx context.Context, user domain.User) error {
-	return us.repository.Update(ctx, user)
+func (us *userService) UpdateUser(ctx context.Context, userDTO domain.UpdateUserDTO, userID string) error {
+	return us.repository.Update(ctx, userDTO, userID)
 }
 func (us *userService) DeleteUser(ctx context.Context, id string) error {
 	return us.repository.Delete(ctx, id)

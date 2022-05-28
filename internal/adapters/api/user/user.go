@@ -30,6 +30,7 @@ func (h *userHandler) Register(router *httprouter.Router) {
 	router.POST(usersSignInURL, h.SignIn)
 	router.GET(userURL, h.GetUser)
 	router.GET(usersURL, h.GetAllUsers)
+	router.PUT(userURL, h.UpdateUser)
 	router.DELETE(userURL, h.DeleteUser)
 }
 
@@ -76,7 +77,10 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params htt
 
 	user, err := h.userService.GetUserByID(r.Context(), id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		if err == apperrors.ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -102,6 +106,29 @@ func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params
 	}
 
 	w.Write(marshalUsers)
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	var dto domain.UpdateUserDTO
+
+	id := params.ByName("user_id")
+
+	err := json.NewDecoder(r.Body).Decode(&dto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.userService.UpdateUser(r.Context(), dto, id)
+	if err != nil {
+		if err == apperrors.ErrUserNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 

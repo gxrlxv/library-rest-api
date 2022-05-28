@@ -108,14 +108,14 @@ func (ur *userRepository) FindAll(ctx context.Context) (u []domain.User, err err
 
 	return u, nil
 }
-func (ur *userRepository) Update(ctx context.Context, user domain.User) error {
-	objectID, err := primitive.ObjectIDFromHex(user.ID)
+func (ur *userRepository) Update(ctx context.Context, userDTO domain.UpdateUserDTO, userID string) error {
+	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		return fmt.Errorf("failed to convert user ID to objectID. ID = %s", user.ID)
+		return fmt.Errorf("failed to convert user ID to objectID. ID = %s", userID)
 	}
 	filter := bson.M{"_id": objectID}
 
-	userBytes, err := bson.Marshal(user)
+	userBytes, err := bson.Marshal(userDTO)
 	if err != nil {
 		return fmt.Errorf("failed to marshal user. error: %v", err)
 	}
@@ -125,9 +125,7 @@ func (ur *userRepository) Update(ctx context.Context, user domain.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal user bytes. error: %v", err)
 	}
-
-	delete(updateUserObj, "_id")
-
+	
 	update := bson.M{
 		"$set": updateUserObj,
 	}
