@@ -6,6 +6,7 @@ import (
 	"github.com/gxrlxv/library-rest-api/internal/domain"
 	"github.com/gxrlxv/library-rest-api/internal/service"
 	"github.com/gxrlxv/library-rest-api/pkg/apperrors"
+	"github.com/gxrlxv/library-rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -19,10 +20,11 @@ const (
 
 type userHandler struct {
 	userService service.User
+	logger      *logging.Logger
 }
 
-func NewUserHandler(service service.User) api.Handler {
-	return &userHandler{userService: service}
+func NewUserHandler(service service.User, logger *logging.Logger) api.Handler {
+	return &userHandler{userService: service, logger: logger}
 }
 
 func (h *userHandler) Register(router *httprouter.Router) {
@@ -37,14 +39,15 @@ func (h *userHandler) Register(router *httprouter.Router) {
 func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	var dto domain.CreateUserDTO
 
-	err := json.NewDecoder(r.Body).Decode(&dto)
-	if err != nil {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = h.userService.CreateUser(r.Context(), dto)
-	if err != nil {
+	if err := h.userService.CreateUser(r.Context(), dto); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -55,7 +58,10 @@ func (h *userHandler) SignUp(w http.ResponseWriter, r *http.Request, params http
 func (h *userHandler) SignIn(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	var dto domain.SignInUserDTO
 
-	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -114,13 +120,15 @@ func (h *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request, params 
 
 	id := params.ByName("user_id")
 
-	err := json.NewDecoder(r.Body).Decode(&dto)
-	if err != nil {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = h.userService.UpdateUser(r.Context(), dto, id)
+	err := h.userService.UpdateUser(r.Context(), dto, id)
 	if err != nil {
 		if err == apperrors.ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)

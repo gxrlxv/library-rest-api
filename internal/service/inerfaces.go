@@ -53,7 +53,7 @@ type (
 		SignIn(ctx context.Context, userDTO domain.SignInUserDTO) error
 		GetUserByID(ctx context.Context, id string) (domain.User, error)
 		GetAllUsers(ctx context.Context) ([]domain.User, error)
-		UpdateUser(ctx context.Context, userDTO domain.UpdateUserDTO, userID string) error
+		UpdateUser(ctx context.Context, userDTO domain.UpdateUserDTO, id string) error
 		DeleteUser(ctx context.Context, id string) error
 	}
 
@@ -63,7 +63,7 @@ type (
 		FindByEmail(ctx context.Context, email string) (u domain.User, err error)
 		FindByUsername(ctx context.Context, email string) (u domain.User, err error)
 		FindAll(ctx context.Context) ([]domain.User, error)
-		Update(ctx context.Context, userDTO domain.UpdateUserDTO, userID string) error
+		Update(ctx context.Context, userDTO domain.UpdateUserDTO, id string) error
 		Delete(ctx context.Context, id string) error
 	}
 )

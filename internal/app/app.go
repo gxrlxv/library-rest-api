@@ -37,7 +37,7 @@ func Run() {
 	}
 
 	userRepo := repository.NewUserRepository(mongoDBClient, logger)
-	userService := service.NewUserService(userRepo)
+	userService := service.NewUserService(userRepo, logger)
 
 	//user1 := domain.User{
 	//	ID:           "43",
@@ -48,7 +48,7 @@ func Run() {
 	//
 	//userRepo.Create(context.Background(), user1)
 
-	handler := user.NewUserHandler(userService)
+	handler := user.NewUserHandler(userService, logger)
 	handler.Register(router)
 
 	if cfg.Listen.Type == "sock" {

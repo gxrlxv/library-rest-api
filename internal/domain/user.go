@@ -53,6 +53,6 @@ type SignInUserDTO struct {
 }
 
 type UpdateUserDTO struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
+	Email    string `json:"email,omitempty"`
+	Username string `json:"username,omitempty"`
 }
