@@ -13,6 +13,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const users = "users"
+
 type userRepository struct {
 	db     *mongo.Database
 	logger *logging.Logger
@@ -24,7 +26,7 @@ func NewUserRepository(db *mongo.Database, logger *logging.Logger) *userReposito
 
 func (ur *userRepository) Create(ctx context.Context, user domain.User) error {
 	ur.logger.Debug("create user")
-	result, err := ur.db.Collection("users").InsertOne(ctx, user)
+	result, err := ur.db.Collection(users).InsertOne(ctx, user)
 	if err != nil {
 		return fmt.Errorf("failed to create user due to error: %v", err)
 	}
@@ -48,7 +50,7 @@ func (ur *userRepository) FindByID(ctx context.Context, id string) (u domain.Use
 	filter := bson.M{"_id": oid}
 
 	ur.logger.Debugf("find user with id: %s", id)
-	result := ur.db.Collection("users").FindOne(ctx, filter)
+	result := ur.db.Collection(users).FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
 			return u, apperrors.ErrUserNotFound
@@ -68,7 +70,7 @@ func (ur *userRepository) FindByEmail(ctx context.Context, email string) (u doma
 	ur.logger.Debugf("find user with email: %s", email)
 	filter := bson.M{"email": email}
 
-	result := ur.db.Collection("users").FindOne(ctx, filter)
+	result := ur.db.Collection(users).FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
 			return u, apperrors.ErrUserNotFound
@@ -88,7 +90,7 @@ func (ur *userRepository) FindByUsername(ctx context.Context, username string) (
 	ur.logger.Debugf("find user with username: %s", username)
 	filter := bson.M{"username": username}
 
-	result := ur.db.Collection("users").FindOne(ctx, filter)
+	result := ur.db.Collection(users).FindOne(ctx, filter)
 	if result.Err() != nil {
 		if errors.Is(result.Err(), mongo.ErrNoDocuments) {
 			return u, apperrors.ErrUserNotFound
@@ -106,7 +108,7 @@ func (ur *userRepository) FindByUsername(ctx context.Context, username string) (
 
 func (ur *userRepository) FindAll(ctx context.Context) (u []domain.User, err error) {
 	ur.logger.Debug("find all users")
-	cursor, err := ur.db.Collection("users").Find(ctx, bson.M{})
+	cursor, err := ur.db.Collection(users).Find(ctx, bson.M{})
 	if cursor.Err() != nil {
 		return u, fmt.Errorf("failed to find all users due to error: %v", err)
 	}
@@ -143,7 +145,7 @@ func (ur *userRepository) Update(ctx context.Context, userDTO domain.UpdateUserD
 	}
 
 	ur.logger.Debugf("update user with id: %s", id)
-	result, err := ur.db.Collection("users").UpdateOne(ctx, filter, update)
+	result, err := ur.db.Collection(users).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return fmt.Errorf("failde to execute update user query. error: %v", err)
 	}
@@ -164,7 +166,7 @@ func (ur *userRepository) Delete(ctx context.Context, id string) error {
 	filter := bson.M{"_id": objectID}
 
 	ur.logger.Debugf("delete user with id: %s", id)
-	result, err := ur.db.Collection("users").DeleteOne(ctx, filter)
+	result, err := ur.db.Collection(users).DeleteOne(ctx, filter)
 	if err != nil {
 		return fmt.Errorf("failed to execute query. error: %v", err)
 	}

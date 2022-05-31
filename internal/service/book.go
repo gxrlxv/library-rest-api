@@ -8,7 +8,6 @@ import (
 type bookService struct {
 	storage       BookRepository
 	authorService Author
-	genreService  Genre
 	userService   User
 }
 

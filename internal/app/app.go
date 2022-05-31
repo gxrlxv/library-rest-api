@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/gxrlxv/library-rest-api/internal/adapters/api/author"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api/user"
 	"github.com/gxrlxv/library-rest-api/internal/config"
 	"github.com/gxrlxv/library-rest-api/internal/repository"
@@ -39,17 +40,14 @@ func Run() {
 	userRepo := repository.NewUserRepository(mongoDBClient, logger)
 	userService := service.NewUserService(userRepo, logger)
 
-	//user1 := domain.User{
-	//	ID:           "43",
-	//	Email:        "fasdasdail.eq",
-	//	Username:     "qwdasdasdas",
-	//	PasswordHash: "fasdczxczxsa",
-	//}
-	//
-	//userRepo.Create(context.Background(), user1)
+	authorRepo := repository.NewAuthorRepository(mongoDBClient, logger)
+	authorService := service.NewAuthorService(authorRepo, logger)
 
-	handler := user.NewUserHandler(userService, logger)
-	handler.Register(router)
+	userHandler := user.NewUserHandler(userService, logger)
+	userHandler.Register(router)
+
+	authorHandler := author.NewAuthorHandler(authorService, logger)
+	authorHandler.Register(router)
 
 	if cfg.Listen.Type == "sock" {
 		logger.Info("detect app path")

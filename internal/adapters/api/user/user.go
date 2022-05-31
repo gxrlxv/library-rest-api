@@ -85,6 +85,7 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params htt
 	if err != nil {
 		if err == apperrors.ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -93,6 +94,7 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params htt
 	marshalUser, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.Write(marshalUser)
@@ -102,13 +104,14 @@ func (h *userHandler) GetUser(w http.ResponseWriter, r *http.Request, params htt
 func (h *userHandler) GetAllUsers(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	users, err := h.userService.GetAllUsers(r.Context())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	marshalUsers, err := json.Marshal(users)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.Write(marshalUsers)
@@ -132,6 +135,7 @@ func (h *userHandler) UpdateUser(w http.ResponseWriter, r *http.Request, params 
 	if err != nil {
 		if err == apperrors.ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -147,6 +151,7 @@ func (h *userHandler) DeleteUser(w http.ResponseWriter, r *http.Request, params 
 	if err != nil {
 		if err == apperrors.ErrUserNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

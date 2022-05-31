@@ -7,15 +7,18 @@ import (
 
 type (
 	Author interface {
-		CreateAuthor(ctx context.Context, author domain.Author) (string, error)
+		CreateAuthor(ctx context.Context, authorDTO domain.CreateAuthorDTO) error
 		GetAuthorByID(ctx context.Context, id string) (domain.Author, error)
 		GetAllAuthors(ctx context.Context) ([]domain.Author, error)
+		UpdateAuthor(ctx context.Context, userDTO domain.UpdateUserDTO, id string) error
+		DeleteAuthor(ctx context.Context, id string) error
 	}
 
 	AuthorRepository interface {
-		Create(ctx context.Context, author domain.Author) (string, error)
-		GetOne(ctx context.Context, id string) (domain.Author, error)
-		GetAll(ctx context.Context) ([]domain.Author, error)
+		Create(ctx context.Context, author domain.Author) error
+		FindByID(ctx context.Context, id string) (domain.Author, error)
+		FindAll(ctx context.Context) ([]domain.Author, error)
+		FindByName(ctx context.Context, name string) (u domain.Author, err error)
 		Update(ctx context.Context, author domain.Author) error
 		Delete(ctx context.Context, id string) error
 	}
