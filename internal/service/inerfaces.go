@@ -34,20 +34,6 @@ type (
 		Delete(ctx context.Context, id string) error
 	}
 
-	Genre interface {
-		CreateGenre(ctx context.Context, genre domain.Genre) (string, error)
-		GetGenreByID(ctx context.Context, id string) (domain.Genre, error)
-		GetAllGenres(ctx context.Context) ([]domain.Genre, error)
-	}
-
-	GenreRepository interface {
-		Create(ctx context.Context, genre domain.Genre) (string, error)
-		GetOne(ctx context.Context, id string) (domain.Genre, error)
-		GetAll(ctx context.Context) ([]domain.Genre, error)
-		Update(ctx context.Context, genre domain.Genre) error
-		Delete(ctx context.Context, id string) error
-	}
-
 	User interface {
 		CreateUser(ctx context.Context, userDTO domain.CreateUserDTO) error
 		SignIn(ctx context.Context, userDTO domain.SignInUserDTO) error

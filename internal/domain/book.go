@@ -5,7 +5,7 @@ type Book struct {
 	Name   string `json:"name,omitempty"`
 	Year   int    `json:"year,omitempty"`
 	Author Author `json:"author,omitempty"`
-	Genre  Genre  `json:"genre,omitempty"`
+	Genre  string `json:"genre,omitempty"`
 	Busy   bool   `json:"busy,omitempty"`
 	Owner  User   `json:"owner,omitempty"`
 }
