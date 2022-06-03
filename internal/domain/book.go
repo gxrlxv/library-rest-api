@@ -10,6 +10,18 @@ type Book struct {
 	Owner  User   `json:"owner" bson:"owner"`
 }
 
+func NewBook(dto CreateBookDTO) Book {
+	return Book{
+		ID:     "",
+		Name:   dto.Name,
+		Year:   dto.Year,
+		Author: dto.Author,
+		Genre:  dto.Genre,
+		Busy:   false,
+		Owner:  User{},
+	}
+}
+
 type CreateBookDTO struct {
 	Name   string `json:"name"`
 	Year   int    `json:"year"`

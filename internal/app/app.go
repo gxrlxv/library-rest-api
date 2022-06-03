@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api/author"
+	"github.com/gxrlxv/library-rest-api/internal/adapters/api/book"
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api/user"
 	"github.com/gxrlxv/library-rest-api/internal/config"
 	"github.com/gxrlxv/library-rest-api/internal/repository"
@@ -43,11 +44,17 @@ func Run() {
 	authorRepo := repository.NewAuthorRepository(mongoDBClient, logger)
 	authorService := service.NewAuthorService(authorRepo, logger)
 
+	bookRepo := repository.NewBookRepository(mongoDBClient, logger)
+	bookService := service.NewBookService(bookRepo, logger)
+
 	userHandler := user.NewUserHandler(userService, logger)
 	userHandler.Register(router)
 
 	authorHandler := author.NewAuthorHandler(authorService, logger)
 	authorHandler.Register(router)
+
+	bookHandler := book.NewBookHandler(bookService, logger)
+	bookHandler.Register(router)
 
 	if cfg.Listen.Type == "sock" {
 		logger.Info("detect app path")

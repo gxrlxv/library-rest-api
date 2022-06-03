@@ -24,15 +24,17 @@ type (
 	}
 
 	Book interface {
-		CreateBook(ctx context.Context, book domain.Book) (string, error)
+		CreateBook(ctx context.Context, bookDTO domain.CreateBookDTO) error
 		GetBookByID(ctx context.Context, id string) (domain.Book, error)
 		GetAllBooks(ctx context.Context) ([]domain.Book, error)
+		UpdateBook(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error
+		DeleteBook(ctx context.Context, id string) error
 	}
 
 	BookRepository interface {
-		Create(ctx context.Context, book domain.Book) (string, error)
-		GetOne(ctx context.Context, id string) (domain.Book, error)
-		GetAll(ctx context.Context) ([]domain.Book, error)
+		Create(ctx context.Context, book domain.Book) error
+		FindByID(ctx context.Context, id string) (domain.Book, error)
+		FindAll(ctx context.Context) ([]domain.Book, error)
 		Update(ctx context.Context, book domain.Book) error
 		Delete(ctx context.Context, id string) error
 	}
