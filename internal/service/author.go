@@ -37,3 +37,13 @@ func (as *authorService) GetAllAuthors(ctx context.Context) ([]domain.Author, er
 	as.logger.Debug("get all authors service")
 	return as.repository.FindAll(ctx)
 }
+
+func (as *authorService) UpdateAuthor(ctx context.Context, authorDTO domain.UpdateAuthorDTO, id string) error {
+	as.logger.Debug("update author service")
+	return as.repository.Update(ctx, authorDTO, id)
+}
+
+func (as *authorService) DeleteAuthor(ctx context.Context, id string) error {
+	as.logger.Debug("delete author service")
+	return as.repository.Delete(ctx, id)
+}

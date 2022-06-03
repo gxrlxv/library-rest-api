@@ -92,9 +92,43 @@ func (h *handler) GetAllAuthors(w http.ResponseWriter, r *http.Request, params h
 }
 
 func (h *handler) UpdateAuthor(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	var dto domain.UpdateAuthorDTO
+
+	id := params.ByName("author_id")
+
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := h.authorService.UpdateAuthor(r.Context(), dto, id)
+	if err != nil {
+		if err == apperrors.ErrAuthorNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *handler) DeleteAuthor(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	id := params.ByName("author_id")
+
+	err := h.authorService.DeleteAuthor(r.Context(), id)
+	if err != nil {
+		if err == apperrors.ErrAuthorNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

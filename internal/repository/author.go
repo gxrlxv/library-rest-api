@@ -97,9 +97,68 @@ func (ar *authorRepository) FindByName(ctx context.Context, name string) (a doma
 	return a, nil
 }
 
-func (ar *authorRepository) Update(ctx context.Context, author domain.Author) error {
+func (ar *authorRepository) Update(ctx context.Context, authorDTO domain.UpdateAuthorDTO, id string) error {
+	ar.logger.Debug("convert id to ObjectID format")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("failed to convert author ID to objectID. ID = %s", id)
+	}
+	filter := bson.M{"_id": objectID}
+
+	authorBytes, err := bson.Marshal(authorDTO)
+	if err != nil {
+		return fmt.Errorf("failed to marshal author. error: %v", err)
+	}
+
+	var updateAuthorObj bson.M
+
+	err = bson.Unmarshal(authorBytes, &updateAuthorObj)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal author bytes. error: %v", err)
+	}
+
+	if authorDTO.Name == "" {
+		delete(updateAuthorObj, "name")
+	}
+	if authorDTO.Nationality == "" {
+		delete(updateAuthorObj, "nationality")
+	}
+	
+	update := bson.M{
+		"$set": updateAuthorObj,
+	}
+
+	ar.logger.Debugf("update author with id: %s", id)
+	result, err := ar.db.Collection(authors).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("failde to execute update author query. error: %v", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return apperrors.ErrAuthorNotFound
+	}
+	ar.logger.Tracef("Matched %d documents and modifed %d", result.MatchedCount, result.ModifiedCount)
+
 	return nil
 }
+
 func (ar *authorRepository) Delete(ctx context.Context, id string) error {
+	ar.logger.Debug("convert id to ObjectID format")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return fmt.Errorf("failed to convert author ID to objectID. ID = %s", id)
+	}
+	filter := bson.M{"_id": objectID}
+
+	ar.logger.Debugf("delete author with id: %s", id)
+	result, err := ar.db.Collection(authors).DeleteOne(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("failed to execute query. error: %v", err)
+	}
+	if result.DeletedCount == 0 {
+		return apperrors.ErrAuthorNotFound
+	}
+	ar.logger.Tracef("Deleted %d documents", result.DeletedCount)
+
 	return nil
 }

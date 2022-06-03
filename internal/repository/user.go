@@ -120,7 +120,6 @@ func (ur *userRepository) FindAll(ctx context.Context) (u []domain.User, err err
 	return u, nil
 }
 func (ur *userRepository) Update(ctx context.Context, userDTO domain.UpdateUserDTO, id string) error {
-
 	ur.logger.Debug("convert id to ObjectID format")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

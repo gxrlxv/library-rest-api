@@ -20,7 +20,6 @@ type CreateAuthorDTO struct {
 }
 
 type UpdateAuthorDTO struct {
-	ID          string `json:"id"`
 	Name        string `json:"name,omitempty"`
 	Nationality string `json:"nationality,omitempty"`
 }
