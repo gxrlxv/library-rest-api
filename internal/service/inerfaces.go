@@ -36,7 +36,7 @@ type (
 		Create(ctx context.Context, book domain.Book) error
 		FindByID(ctx context.Context, id string) (domain.Book, error)
 		FindAll(ctx context.Context) ([]domain.Book, error)
-		Update(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error
+		Update(ctx context.Context, book domain.Book, id string) error
 		Delete(ctx context.Context, id string) error
 	}
 
@@ -44,6 +44,7 @@ type (
 		CreateUser(ctx context.Context, userDTO domain.CreateUserDTO) error
 		SignIn(ctx context.Context, userDTO domain.SignInUserDTO) error
 		GetUserByID(ctx context.Context, id string) (domain.User, error)
+		GetUserByName(ctx context.Context, name string) (domain.User, error)
 		GetAllUsers(ctx context.Context) ([]domain.User, error)
 		UpdateUser(ctx context.Context, userDTO domain.UpdateUserDTO, id string) error
 		DeleteUser(ctx context.Context, id string) error

@@ -5,6 +5,7 @@ import (
 	"github.com/gxrlxv/library-rest-api/internal/adapters/api"
 	"github.com/gxrlxv/library-rest-api/internal/domain"
 	"github.com/gxrlxv/library-rest-api/internal/service"
+	"github.com/gxrlxv/library-rest-api/pkg/apperrors"
 	"github.com/gxrlxv/library-rest-api/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
@@ -44,10 +45,10 @@ func (h *bookHandler) CreateBook(w http.ResponseWriter, r *http.Request, params 
 	}
 
 	if err := h.bookService.CreateBook(r.Context(), dto); err != nil {
-		//if err == apperrors.ErrUserNotFound {
-		//	http.Error(w, err.Error(), http.StatusNotFound)
-		//	return
-		//}
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
@@ -56,17 +57,83 @@ func (h *bookHandler) CreateBook(w http.ResponseWriter, r *http.Request, params 
 }
 
 func (h *bookHandler) GetBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	id := params.ByName("book_id")
+
+	book, err := h.bookService.GetBookByID(r.Context(), id)
+	if err != nil {
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	marshalBook, err := json.Marshal(book)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(marshalBook)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *bookHandler) GetAllBooks(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	books, err := h.bookService.GetAllBooks(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	marshalBooks, err := json.Marshal(books)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(marshalBooks)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *bookHandler) UpdateBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	var dto domain.UpdateBookDTO
+
+	id := params.ByName("book_id")
+
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := h.bookService.UpdateBook(r.Context(), dto, id)
+	if err != nil {
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *bookHandler) DeleteBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	panic("implement me")
+	id := params.ByName("book_id")
+
+	err := h.bookService.DeleteBook(r.Context(), id)
+	if err != nil {
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

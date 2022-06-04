@@ -77,7 +77,7 @@ func (bs *bookRepository) FindAll(ctx context.Context) (b []domain.Book, err err
 	return b, nil
 }
 
-func (bs *bookRepository) Update(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error {
+func (bs *bookRepository) Update(ctx context.Context, book domain.Book, id string) error {
 	bs.logger.Debug("convert id to ObjectID format")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -85,7 +85,7 @@ func (bs *bookRepository) Update(ctx context.Context, bookDTO domain.UpdateBookD
 	}
 	filter := bson.M{"_id": objectID}
 
-	bookBytes, err := bson.Marshal(bookDTO)
+	bookBytes, err := bson.Marshal(book)
 	if err != nil {
 		return fmt.Errorf("failed to marshal book. error: %v", err)
 	}
@@ -96,6 +96,8 @@ func (bs *bookRepository) Update(ctx context.Context, bookDTO domain.UpdateBookD
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal book bytes. error: %v", err)
 	}
+
+	delete(updateBookObj, "_id")
 
 	update := bson.M{
 		"$set": updateBookObj,

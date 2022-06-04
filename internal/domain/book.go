@@ -10,15 +10,15 @@ type Book struct {
 	Owner  User   `json:"owner" bson:"owner"`
 }
 
-func NewBook(dto CreateBookDTO, author Author) Book {
+func NewBook(name, genre string, year int, busy bool, author Author, owner User) Book {
 	return Book{
 		ID:     "",
-		Name:   dto.Name,
-		Year:   dto.Year,
+		Name:   name,
+		Year:   year,
 		Author: author,
-		Genre:  dto.Genre,
-		Busy:   false,
-		Owner:  User{},
+		Genre:  genre,
+		Busy:   busy,
+		Owner:  owner,
 	}
 }
 
@@ -30,10 +30,10 @@ type CreateBookDTO struct {
 }
 
 type UpdateBookDTO struct {
-	Name   string `json:"name,omitempty"`
-	Year   int    `json:"year,omitempty"`
-	Author Author `json:"author,omitempty"`
-	Genre  string `json:"genre,omitempty"`
-	Busy   bool   `json:"busy,omitempty"`
-	Owner  User   `json:"owner,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Year       int    `json:"year,omitempty"`
+	AuthorName string `json:"author_name,omitempty"`
+	Genre      string `json:"genre,omitempty"`
+	Busy       bool   `json:"busy,omitempty"`
+	OwnerName  string `json:"owner_name,omitempty"`
 }

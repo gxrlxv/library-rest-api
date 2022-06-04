@@ -25,7 +25,7 @@ func (bs *bookService) CreateBook(ctx context.Context, bookDTO domain.CreateBook
 		return err
 	}
 
-	book := domain.NewBook(bookDTO, author)
+	book := domain.NewBook(bookDTO.Name, bookDTO.Genre, bookDTO.Year, false, author, domain.User{})
 	return bs.repository.Create(ctx, book)
 }
 
@@ -41,7 +41,20 @@ func (bs *bookService) GetAllBooks(ctx context.Context) ([]domain.Book, error) {
 
 func (bs *bookService) UpdateBook(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error {
 	bs.logger.Debug("update book service")
-	return bs.repository.Update(ctx, bookDTO, id)
+
+	author, err := bs.author.GetAuthorByName(ctx, bookDTO.AuthorName)
+	if err != nil {
+		return err
+	}
+
+	user, err := bs.user.GetUserByName(ctx, bookDTO.OwnerName)
+	if err != nil {
+		return err
+	}
+
+	book := domain.NewBook(bookDTO.Name, bookDTO.Genre, bookDTO.Year, bookDTO.Busy, author, user)
+
+	return bs.repository.Update(ctx, book, id)
 }
 
 func (bs *bookService) DeleteBook(ctx context.Context, id string) error {

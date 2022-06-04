@@ -67,6 +67,11 @@ func (us *userService) GetUserByID(ctx context.Context, id string) (domain.User,
 	return us.repository.FindByID(ctx, id)
 }
 
+func (us *userService) GetUserByName(ctx context.Context, name string) (domain.User, error) {
+	us.logger.Debug("get user by id service")
+	return us.repository.FindByUsername(ctx, name)
+}
+
 func (us *userService) GetAllUsers(ctx context.Context) ([]domain.User, error) {
 	us.logger.Debug("get all users service")
 	return us.repository.FindAll(ctx)

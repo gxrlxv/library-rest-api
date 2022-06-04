@@ -118,13 +118,6 @@ func (ar *authorRepository) Update(ctx context.Context, authorDTO domain.UpdateA
 		return fmt.Errorf("failed to unmarshal author bytes. error: %v", err)
 	}
 
-	if authorDTO.Name == "" {
-		delete(updateAuthorObj, "name")
-	}
-	if authorDTO.Nationality == "" {
-		delete(updateAuthorObj, "nationality")
-	}
-
 	update := bson.M{
 		"$set": updateAuthorObj,
 	}
