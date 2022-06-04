@@ -45,7 +45,7 @@ func Run() {
 	authorService := service.NewAuthorService(authorRepo, logger)
 
 	bookRepo := repository.NewBookRepository(mongoDBClient, logger)
-	bookService := service.NewBookService(bookRepo, logger)
+	bookService := service.NewBookService(authorService, userService, bookRepo, logger)
 
 	userHandler := user.NewUserHandler(userService, logger)
 	userHandler.Register(router)

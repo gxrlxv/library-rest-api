@@ -63,6 +63,7 @@ func (ar *authorRepository) FindByID(ctx context.Context, id string) (a domain.A
 
 	return a, nil
 }
+
 func (ar *authorRepository) FindAll(ctx context.Context) (a []domain.Author, err error) {
 	ar.logger.Debug("find all authors")
 	cursor, err := ar.db.Collection(authors).Find(ctx, bson.M{})
@@ -78,7 +79,7 @@ func (ar *authorRepository) FindAll(ctx context.Context) (a []domain.Author, err
 }
 
 func (ar *authorRepository) FindByName(ctx context.Context, name string) (a domain.Author, err error) {
-	ar.logger.Debugf("find aythor with name: %s", name)
+	ar.logger.Debugf("find author with name: %s", name)
 	filter := bson.M{"name": name}
 
 	result := ar.db.Collection(authors).FindOne(ctx, filter)
@@ -123,7 +124,7 @@ func (ar *authorRepository) Update(ctx context.Context, authorDTO domain.UpdateA
 	if authorDTO.Nationality == "" {
 		delete(updateAuthorObj, "nationality")
 	}
-	
+
 	update := bson.M{
 		"$set": updateAuthorObj,
 	}

@@ -9,6 +9,7 @@ type (
 	Author interface {
 		CreateAuthor(ctx context.Context, authorDTO domain.CreateAuthorDTO) error
 		GetAuthorByID(ctx context.Context, id string) (domain.Author, error)
+		GetAuthorByName(ctx context.Context, name string) (domain.Author, error)
 		GetAllAuthors(ctx context.Context) ([]domain.Author, error)
 		UpdateAuthor(ctx context.Context, authorDTO domain.UpdateAuthorDTO, id string) error
 		DeleteAuthor(ctx context.Context, id string) error
@@ -35,7 +36,7 @@ type (
 		Create(ctx context.Context, book domain.Book) error
 		FindByID(ctx context.Context, id string) (domain.Book, error)
 		FindAll(ctx context.Context) ([]domain.Book, error)
-		Update(ctx context.Context, book domain.Book) error
+		Update(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error
 		Delete(ctx context.Context, id string) error
 	}
 

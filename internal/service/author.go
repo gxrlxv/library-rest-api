@@ -33,6 +33,11 @@ func (as *authorService) GetAuthorByID(ctx context.Context, id string) (domain.A
 	return as.repository.FindByID(ctx, id)
 }
 
+func (as *authorService) GetAuthorByName(ctx context.Context, name string) (domain.Author, error) {
+	as.logger.Debug("get author by name service")
+	return as.repository.FindByName(ctx, name)
+}
+
 func (as *authorService) GetAllAuthors(ctx context.Context) ([]domain.Author, error) {
 	as.logger.Debug("get all authors service")
 	return as.repository.FindAll(ctx)
