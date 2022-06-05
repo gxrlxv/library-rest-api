@@ -52,3 +52,6 @@ go build
 - GET get book by id
 - PUT update book
 - DELETE delete book 
+#### /api/books/:book_id/take
+- PUT take a book
+- DELETE undo a book 
