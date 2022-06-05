@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	bookURL  = "/api/books/:book_id"
-	booksURL = "/api/books"
+	bookURL      = "/api/books/:book_id"
+	booksURL     = "/api/books"
+	takeBooksURL = "/api/books/:book_id/take"
 )
 
 type bookHandler struct {
@@ -31,6 +32,8 @@ func (h *bookHandler) Register(router *httprouter.Router) {
 	router.GET(booksURL, h.GetAllBooks)
 	router.PUT(bookURL, h.UpdateBook)
 	router.DELETE(bookURL, h.DeleteBook)
+	router.PUT(takeBooksURL, h.TakeBook)
+	router.DELETE(takeBooksURL, h.GiveBook)
 }
 
 func (h *bookHandler) CreateBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -126,6 +129,38 @@ func (h *bookHandler) DeleteBook(w http.ResponseWriter, r *http.Request, params 
 	id := params.ByName("book_id")
 
 	err := h.bookService.DeleteBook(r.Context(), id)
+	if err != nil {
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *bookHandler) TakeBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("book_id")
+
+	err := h.bookService.BusyBook(r.Context(), id, true)
+	if err != nil {
+		if err == apperrors.ErrBookNotFound {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *bookHandler) GiveBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	id := params.ByName("book_id")
+
+	err := h.bookService.BusyBook(r.Context(), id, false)
 	if err != nil {
 		if err == apperrors.ErrBookNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)

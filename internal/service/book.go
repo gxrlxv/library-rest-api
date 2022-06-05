@@ -61,3 +61,15 @@ func (bs *bookService) DeleteBook(ctx context.Context, id string) error {
 	bs.logger.Debug("delete book service")
 	return bs.repository.Delete(ctx, id)
 }
+
+func (bs *bookService) BusyBook(ctx context.Context, id string, isBusy bool) error {
+	bs.logger.Debug("busy book service")
+
+	book, err := bs.repository.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	book.BusyBook(isBusy)
+
+	return bs.repository.Update(ctx, book, id)
+}

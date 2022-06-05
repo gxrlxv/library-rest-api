@@ -22,6 +22,10 @@ func NewBook(name, genre string, year int, busy bool, author Author, owner User)
 	}
 }
 
+func (b *Book) BusyBook(isBusy bool) {
+	b.Busy = isBusy
+}
+
 type CreateBookDTO struct {
 	Name       string `json:"name"`
 	Year       int    `json:"year"`
