@@ -54,4 +54,4 @@ go build
 - DELETE delete book 
 #### /api/books/:book_id/take
 - PUT take a book
-- DELETE undo a book 
+- DELETE give a book 
