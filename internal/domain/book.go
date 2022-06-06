@@ -22,8 +22,8 @@ func NewBook(name, genre string, year int, busy bool, author Author, owner User)
 	}
 }
 
-func (b *Book) BusyBook(isBusy bool) {
-	b.Busy = isBusy
+func (b Book) IsBusy() bool {
+	return b.Busy
 }
 
 type CreateBookDTO struct {
@@ -40,4 +40,8 @@ type UpdateBookDTO struct {
 	Genre      string `json:"genre,omitempty"`
 	Busy       bool   `json:"busy,omitempty"`
 	OwnerName  string `json:"owner_name,omitempty"`
+}
+
+type TakeBookDTO struct {
+	OwnerName string `json:"owner_name,omitempty"`
 }

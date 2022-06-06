@@ -30,7 +30,8 @@ type (
 		GetAllBooks(ctx context.Context) ([]domain.Book, error)
 		UpdateBook(ctx context.Context, bookDTO domain.UpdateBookDTO, id string) error
 		DeleteBook(ctx context.Context, id string) error
-		BusyBook(ctx context.Context, id string, isBusy bool) error
+		GiveBook(ctx context.Context, id string) error
+		TakeBook(ctx context.Context, id string, name string) error
 	}
 
 	BookRepository interface {

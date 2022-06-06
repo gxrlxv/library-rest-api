@@ -142,9 +142,19 @@ func (h *bookHandler) DeleteBook(w http.ResponseWriter, r *http.Request, params 
 }
 
 func (h *bookHandler) TakeBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	var dto domain.TakeBookDTO
+
 	id := params.ByName("book_id")
 
-	err := h.bookService.BusyBook(r.Context(), id, true)
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+
+	if err := dec.Decode(&dto); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := h.bookService.TakeBook(r.Context(), id, dto.OwnerName)
 	if err != nil {
 		if err == apperrors.ErrBookNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -160,7 +170,7 @@ func (h *bookHandler) TakeBook(w http.ResponseWriter, r *http.Request, params ht
 func (h *bookHandler) GiveBook(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	id := params.ByName("book_id")
 
-	err := h.bookService.BusyBook(r.Context(), id, false)
+	err := h.bookService.GiveBook(r.Context(), id)
 	if err != nil {
 		if err == apperrors.ErrBookNotFound {
 			http.Error(w, err.Error(), http.StatusNotFound)
